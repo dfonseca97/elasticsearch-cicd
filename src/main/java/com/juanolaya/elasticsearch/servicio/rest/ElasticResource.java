@@ -12,6 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ElasticResource {
+    @RequestMapping("/")
+    public String root() {
+        return "<h1>Elasticsearch CICD is running!</h1>";
+    }
+
+    @RequestMapping("/health")
+    public String health() {
+        return "<h1>Elasticsearch CICD is running!</h1>";
+    }
+
     @RequestMapping("/index")
     public String index(@RequestParam(value="docsPath") String docsPath) {
         getIndexer().index(docsPath);
