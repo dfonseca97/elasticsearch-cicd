@@ -1,5 +1,4 @@
 version: '3.7'
-
 services:
   elastic-server:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
@@ -9,3 +8,12 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
+    volumes:
+      - .:/elasticsearch
+  spring-app:
+    image: dafg/elasticsearch:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - elastic-server
+    
