@@ -1,0 +1,492 @@
+
+Interval-Valued and Fuzzy-Valued Random
+Variables: From Computing Sample Variances
+to Computing Sample Covariances
+
+Jan B. Beck1, Vladik Kreinovich1, and Berlin Wu2
+
+1 University of Texas, El Paso TX 79968, USA, {janb,vladik}@cs.utep.edu
+2 National Chengchi University, Taipei, Taiwan berlin@math.nccu.edu.tw
+
+Summary. Due to measurement uncertainty, often, instead of the actual values
+xi of the measured quantities, we only know the intervals xi = [x˜i − ∆i, x˜i + ∆i],
+where x˜i is the measured value and ∆i is the upper bound on the measurement error
+(provided, e.g., by the manufacturer of the measuring instrument). These intervals
+can be viewed as random intervals, i.e., as samples from the interval-valued random
+variable. In such situations, instead of the exact value of the sample statistics such
+as covariance Cx,y, we can only have an interval Cx,y of possible values of this
+statistic. It is known that in general, computing such an interval Cx,y for Cx,y is
+an NP-hard problem. In this paper, we describe an algorithm that computes this
+range Cx,y for the case when the measurements are accurate enough – so that the
+intervals corresponding to different measurements do not intersect much.
+
+Introduction
+
+Traditional statistics: brief reminder. In traditional statistics, we have i.i.d.
+variables x1, . . . , xn, . . ., and we want to find statistics sn(x1, . . . , xn) that
+would approximate the desired parameter of the corresponding probability
+distribution. For example, if we want to estimate the mean E[x], we can take
+the arithmetic average sn = (x1 + . . . + xn)/n. It is known that as n → ∞,
+this statistic tends (with probability 1) to the desired mean: sn → E[x]. Simi-
+larly, the sample variance tends to the actual variance, the sample covariance
+between two different samples tends to the actual covariance C[x, y], etc.
+
+Coarsening: a source of random sets. In traditional statistics, we implicitly
+assume that the values xi are directly observable. In real life, due to (in-
+evitable) measurement uncertainty, often, what we actually observe is a set
+Si that contains the actual (unknown) value of xi. This phenomenon is called
+coarsening; see, e.g., [3]. Due to coarsening, instead of the actual values xi,
+all we know is the sets X1, . . . , Xn, . . . that are known the contain the actual
+(un-observable) values xi: xi ∈ Xi.
+
+
+
+2 Jan B. Beck, Vladik Kreinovich, and Berlin Wu
+
+Statistics based on coarsening. The sets X1, . . . , Xn, . . . are i.i.d. random sets.
+We want to find statistics of these random sets that would enable us to approx-
+imate the desired parameters of the original distribution x. Here, a statistic
+Sn(X1, . . . , Xn) transform n sets X1, . . . , Xn into a new set. We want this
+statistic Sn(X1, . . . , Xn) to tend to a limit set L as n → ∞, and we want
+this limit set L to contain the value of the desired parameter of the original
+distribution.
+
+For example, if we are interested in the mean E[x], then we can take
+Sn = (X1 + . . . +Xn)/n (where the sum is the Mankowski – element-wise –
+sum of the sets). It is possible to show that, under reasonable assumptions,
+this statistic tends to a limit L, and that E[x] ∈ L. This limit can be viewed,
+therefore, as a set-based average of the sets X1, . . . , Xn.
+
+Important issue: computational complexity. There has been a lot of inter-
+esting theoretical research on set-valued random variables and corresponding
+statistics. In many cases, the corresponding statistics have been designed, and
+their asymptotical properties have been proven; see, e.g., [2, 6] and references
+therein.
+
+In many such situations, the main obstacle on the way of practically using
+these statistics is the fact that going from random numbers to random sets
+drastically increases the computational complexity – hence, the running time
+– of the required computations. It is therefore desirable to come up with new,
+faster algorithms for computing such set-values heuristics.
+
+What we are planning to do. In this paper, we design such faster algorithm
+for a specific practical problem: the problem of data processing. As we will
+show, in this problem, it is reasonable to restrict ourselves to random intervals
+– an important specific case of random sets.
+
+Practical Problem: Data Processing – From Computing to
+Probabilities to Intervals
+
+Why data processing? In many real-life situations, we are interested in the
+value of a physical quantity y that is difficult or impossible to measure directly.
+Examples of such quantities are the distance to a star and the amount of oil in
+a given well. Since we cannot measure y directly, a natural idea is to measure
+y indirectly. Specifically, we find some easier-to-measure quantities x1, . . . , xn
+which are related to y by a known relation y = f(x1, . . . , xn). This relation
+may be a simple functional transformation, or complex algorithm (e.g., for
+the amount of oil, numerical solution to an inverse problem).
+
+It is worth mentioning that in the vast majority of these cases, the function
+f(x1, . . . , xn) that describes the dependence between physical quantities is
+continuous.
+
+Then, to estimate y, we first measure the values of the quantities x1, . . . , xn,
+and then we use the results x˜1, . . . , x˜n of these measurements to to compute
+an estimate y˜ for y as y˜ = f(x˜1, . . . , x˜n).
+
+
+
+Interval-Valued Random Variables: How to Compute Sample Covariance 3
+
+For example, to find the resistance R, we measure current I and voltage V ,
+and then use the known relation R = V/I to estimate resistance as R˜ = V˜ /I˜.
+
+Computing an estimate for y based on the results of direct measurements
+is called data processing; data processing is the main reason why computers
+were invented in the first place, and data processing is still one of the main
+uses of computers as number crunching devices.
+
+Comment. In this paper, for simplicity, we consider the case when the relation
+between xi and y is known exactly; in some practical situations, we only known
+an approximate relation between xi and y.
+
+Why interval computations? From computing to probabilities to intervals.
+Measurement are never 100% accurate, so in reality, the actual value xi of
+i-th measured quantity can differ from the measurement result x˜i. Because of
+these measurement errors ∆xi
+
+def= x˜i−xi, the result y˜ = f(x˜1, . . . , x˜n) of data
+processing is, in general, different from the actual value y = f(x1, . . . , xn) of
+the desired quantity y [12].
+
+It is desirable to describe the error ∆y def= y˜ − y of the result of data
+processing. To do that, we must have some information about the errors of
+direct measurements.
+
+What do we know about the errors ∆xi of direct measurements? First,
+the manufacturer of the measuring instrument must supply us with an up-
+per bound ∆i on the measurement error. If no such upper bound is supplied,
+this means that no accuracy is guaranteed, and the corresponding “measuring
+instrument” is practically useless. In this case, once we performed a measure-
+ment and got a measurement result x˜i, we know that the actual (unknown)
+value xi of the measured quantity belongs to the interval xi = [xi, xi], where
+xi = x˜i −∆i and xi = x˜i +∆i.
+
+In many practical situations, we not only know the interval [−∆i,∆i] of
+possible values of the measurement error; we also know the probability of
+different values ∆xi within this interval. This knowledge underlies the tradi-
+tional engineering approach to estimating the error of indirect measurement,
+in which we assume that we know the probability distributions for measure-
+ment errors ∆xi.
+
+In practice, we can determine the desired probabilities of different val-
+ues of ∆xi by comparing the results of measuring with this instrument with
+the results of measuring the same quantity by a standard (much more accu-
+rate) measuring instrument. Since the standard measuring instrument is much
+more accurate than the one use, the difference between these two measure-
+ment results is practically equal to the measurement error; thus, the empirical
+distribution of this difference is close to the desired probability distribution
+for measurement error. There are two cases, however, when this determination
+is not done:
+
+• First is the case of cutting-edge measurements, e.g., measurements in fun-
+damental science. When a Hubble telescope detects the light from a distant
+
+
+
+4 Jan B. Beck, Vladik Kreinovich, and Berlin Wu
+
+galaxy, there is no “standard” (much more accurate) telescope floating
+nearby that we can use to calibrate the Hubble: the Hubble telescope is
+the best we have.
+
+• The second case is the case of measurements on the shop floor. In this
+case, in principle, every sensor can be thoroughly calibrated, but sensor
+calibration is so costly – usually costing ten times more than the sensor
+itself – that manufacturers rarely do it.
+
+In both cases, we have no information about the probabilities of ∆xi; the only
+information we have is the upper bound on the measurement error.
+
+In this case, after we performed a measurement and got a measurement
+result x˜i, the only information that we have about the actual value xi of the
+measured quantity is that it belongs to the interval xi = [x˜i − ∆i, x˜i + ∆i].
+In such situations, the only information that we have about the (unknown)
+actual value of y = f(x1, . . . , xn) is that y belongs to the range y = [y, y] of
+the function f over the box x1 × . . .× xn:
+
+y = [y, y] = {f(x1, . . . , xn) |x1 ∈ x1, . . . , xn ∈ xn}.
+
+For continuous functions f(x1, . . . , xn), this range is an interval. The process
+of computing this interval range based on the input intervals xi is called
+interval computations; see, e.g., [4].
+
+Interval computations techniques: brief reminder. Historically the first method
+for computing the enclosure for the range is the method which is sometimes
+called “straightforward” interval computations. This method is based on the
+fact that inside the computer, every algorithm consists of elementary opera-
+tions (arithmetic operations, min, max, etc.). For each elementary operation
+f(a, b), if we know the intervals a and b for a and b, we can compute the
+exact range f(a,b). The corresponding formulas form the so-called interval
+arithmetic. For example,
+
+[a, a] + [b, b] = [a+ b, a+ b]; [a, a]− [b, b] = [a− b, a− b];
+
+[a, a] · [b, b] = [min(a · b, a · b, a · b, a · b),max(a · b, a · b, a · b, a · b)].
+In straightforward interval computations, we repeat the computations forming
+the program f step-by-step, replacing each operation with real numbers by the
+corresponding operation of interval arithmetic. It is known that, as a result,
+we get an enclosure Y ⊇ y for the desired range.
+
+In some cases, this enclosure is exact. In more complex cases (see examples
+below), the enclosure has excess width.
+
+There exist more sophisticated techniques for producing a narrower enclo-
+sure, e.g., a centered form method. However, for each of these techniques, there
+are cases when we get an excess width. Reason: as shown in [5], the problem
+of computing the exact range is known to be NP-hard even for polynomial
+functions f(x1, . . . , xn) (actually, even for quadratic functions f).
+
+
+
+Interval-Valued Random Variables: How to Compute Sample Covariance 5
+
+Comment. NP-hard means, crudely speaking, that no feasible algorithm
+can compute the exact range of f(x1, . . . , xn) for all possible polynomials
+f(x1, . . . , xn) and for all possible intervals x1, . . . ,xn.
+
+What we are planning to do? In this paper, we analyze a specific interval
+computations problem – when we use traditional statistical data processing
+algorithms f(x1, . . . , xn) to process the results of direct measurements.
+
+Error Estimation for Traditional Statistical Data Processing
+Algorithms under Interval Uncertainty: Known Results
+
+Formulation of the problem. When we have n results x1, . . . , xn of repeated
+measurement of the same quantity (at different points, or at different moments
+of time), traditional statistical approach usually starts with computing their
+sample average Ex = (x1 + . . .+ xn)/n and their (sample) variance
+
+Vx =
+(x1 − Ex)2 + . . .+ (xn − Ex)2
+
+n
+(1)
+
+(or, equivalently, the sample standard deviation σ =
+√
+V ). If, during each
+
+measurement i, we measure the values xi and yi of two different quantities x
+and y, then we also compute their (sample) covariance
+
+Cx,y =
+(x1 − Ex) · (yi − Ey) + . . .+ (xn − Ex) · (yn − Ey)
+
+n
+; (2)
+
+see, e.g., [12].
+As we have mentioned, in real life, we often do not know the exact values
+
+of the quantities xi and yi, we only know the intervals xi of possible values of
+xi and the intervals yi of possible values of yi. In such situations, for different
+possible values xi ∈ xi and yi ∈ yi, we get different values of Ex, Ey, Vx, and
+Cx,y. The question is: what are the intervals Ex, Vx, and Cx,y of possible
+values of Ex, Vx, and Cx,y?
+
+The practical importance of this question was emphasized, e.g., in [9, 10]
+on the example of processing geophysical data.
+
+Comment: the problem reformulated in terms of set-valued random variables.
+Traditional statistical data processing means that we assume that the mea-
+sured values xi and yi are samples of random variables, and based on these
+samples, we are estimating the actual average, variance, and covariance.
+
+Similarly, in case of interval uncertainty, we can say that the intervals
+xi and yi coming from measurements are samples of interval-valued random
+variables, and we are interested in estimating the actual (properly defined)
+average, variance, and covariance of these interval-valued random variables.
+
+Bounds on E. For Ex, the straightforward interval computations leads to the
+exact range:
+
+Ex =
+x1 + . . .+ xn
+
+n
+, i.e., Ex =
+
+x1 + . . .+ xn
+n
+
+, and Ex =
+x1 + . . .+ xn
+
+n
+.
+
+
+
+6 Jan B. Beck, Vladik Kreinovich, and Berlin Wu
+
+For variance, the problem is difficult. For Vx, all known algorithms lead to
+an excess width. Specifically, there exist feasible algorithms for computing V x
+(see, e.g., [1]), but in general, the problem of computing V x is NP-hard [1].
+
+It is also known that in some practically important cases, feasible algo-
+rithms for computing V x are possible. One such practically useful case is
+when the measurement accuracy is good enough so that we can tell that the
+different measured values x˜i are indeed different – e.g., the corresponding in-
+tervals xi do not intersect. In this case, there exists a quadratic-time algorithm
+for computing V x; see, e.g., [1].
+
+What about covariance? The only thing that we know is that in general, com-
+puting covariance Cx,y is NP-hard [11].
+
+In this paper, we show that (similarly to the case of variance), it is possible
+to compute the interval covariance when the measurement are accurate enough
+to enable us to distinguish between different measurement results (x˜i, y˜i).
+
+Main Results
+
+Theorem 1. There exists a polynomial-time algorithm that, given a list of n
+pairwise disjoint boxes xi × yi (1 ≤ i ≤ n) (i.e., in which every two boxes
+have an empty intersection), produces the exact range Cx,y for the covariance
+Cx,y.
+
+Theorem 2. For every integer K > 1, there exists a polynomial-time algo-
+rithm that, given a list of n boxes xi × yi (1 ≤ i ≤ n) in which > K boxes
+always have an empty intersection, produces the exact range Cx,y for the co-
+variance Cx,y.
+
+Proof. Since Cx,y is linear in xi, we have C−x,y = −Cx,y hence C−x,y =
+−Cx,y, so C−x,y = −Cx,y. Because of this relation, it is sufficient to provide
+an algorithm for computing Cx,y: we will then compute Cx,y as −C−x,y.
+
+The function Cx,y is linear in each of its variables xi and yi. In general,
+a linear function f(x) attains its minimum on an interval [x, x] at one of its
+endpoints: at x if f is non-decreasing (∂f/∂x ≥ 0) and at x if f is non-
+increasing (∂f/∂x ≤ 0). For Cx,y, we have ∂Cx,y/∂xi = (1/n) ·yi− (1/n) ·Ey,
+so ∂Cx,y/∂xi ≥ 0 if and only if yi ≥ Ey. Thus, for each i, the values xmi and
+ymi at which Cx,y attains its minimum satisfy the following four properties:
+
+1. if xmi = xi, then y
+m
+i ≥ Ey; 2. if xmi = xi, then ymi ≤ Ey;
+
+3. if ymi = yi, then x
+m
+i ≥ Ex; 4. if ymi = yi, then xmi ≤ Ex.
+
+Let us show that if we know the vector E def= (Ex, Ey), and this vector is
+
+outside the i-th box bi
+def= xi×yi, then we can uniquely determine the values
+
+xmi and y
+m
+i .
+
+Indeed, the fact that E 6∈ bi means that either Ex 6∈ xi or Ey 6∈ yi.
+Without losing generality, let us assume that Ex 6∈ xi, i.e., that either Ex < xi
+or Ex > xi.
+
+
+
+Interval-Valued Random Variables: How to Compute Sample Covariance 7
+
+If Ex < xi, then, since xi ≤ xmi , we have Ex < xmi . Hence, according to
+Property 4, we cannot have ymi = yi. Since the minimum is always attained
+at one of the endpoints, we thus have ymi = yi. Now that we know the value
+of ymi , we can use Properties 1 and 2:
+
+if y
+i
+≥ Ey, then xmi = xi; if yi ≤ Ey, then xmi = xi.
+
+Similarly, if Ex > xi, then ymi = yi, and:
+
+if yi ≥ Ey, then xmi = xi; if yi ≤ Ey, then xmi = xi.
+So, to compute Cx,y, we sort all 2n values xi, xi into a sequence
+
+x(1) ≤ x(2) ≤ . . . ≤ x(2n), and we sort the 2n values yi, yi into a sequence
+y(1) ≤ y(2) ≤ . . . ≤ y(2n). We thus get 2n× 2n “zones” zk,l def= [x(k), x(k+1)]×
+[y(l), x(l+1)].
+
+We know that the average E of the actual minimum values is attained
+in one of these zones. If we assume that E ∈ zk,l, i.e., in particular, that
+Ex ∈ [x(k), x(k+1)], then the condition xi ≥ Ex is guaranteed to be satisfied
+if xi ≥ x(k+1). Thus, following the above arguments, we can find the values
+(xmi , y
+
+m
+i ) for all the boxes bi that do not contain this zone:
+
+yi ≤ y(l) yi ≤ y(l) ≤ y(l+1) ≤ yi y(l+1) ≤ yi
+xi ≤ x(k) (xi, yi) (xi, yi) (xi, yi)
+
+xi ≤ x(k) ≤ x(k+1) ≤ xi (xi, yi) ? (xi, yi)
+x(k+1) ≤ xi (xi, yi) (xi, yi) (xi, yi)
+
+As we can see, for each of O(n2) zones zk,l, the only case when we do not
+know the corresponding values (xmi , y
+
+m
+i ) is when bi contains this zone. All
+
+boxes bi with this property have a common intersection zk,l, thus, there can
+be no more than K of them. For each of these ≤ K boxes bi, we try all 4
+possible combinations of endpoints as the corresponding (xmi , y
+
+m
+i ).
+
+Thus, for each of O(n2) zones, we must try ≤ 4K possible sequences of
+pairs (xmi , y
+
+m
+i ). We compute each of these n-element sequences element-by-
+
+element, so computing each sequence requires O(n) computational steps.
+For each of these sequences, we check whether the averages Ex and Ey
+
+are indeed within this zone, and if they are, we compute the correlation. The
+smallest of the resulting correlations is the desired value Cx,y.
+
+For each of O(n2) zones, we need O(n) steps, to the total of O(n2)×O(n) =
+O(n3); computing the smallest of O(n2) values requires O(n2) more steps.
+Thus, our algorithm computes Cx,y in O(n
+
+3) steps. uunionsq
+From Interval-Valued to Fuzzy-Valued Random Variables
+
+Often, in addition (or instead) the guaranteed bounds, an expert can provide
+bounds that contain xi with a certain degree of confidence. Often, we know
+several such bounding intervals corresponding to different degrees of confi-
+dence. Such a nested family of intervals is also called a fuzzy set, because it
+
+
+
+8 Jan B. Beck, Vladik Kreinovich, and Berlin Wu
+
+turns out to be equivalent to a more traditional definition of fuzzy set [7, 8] (if
+a traditional fuzzy set is given, then different intervals from the nested family
+can be viewed as α-cuts corresponding to different levels of uncertainty α).
+
+To provide statistical values of fuzzy-valued random variables, we can
+therefore, for each level α, apply the above interval-valued techniques to the
+corresponding α-cuts.
+
+Acknowledgments. This work was supported by NASA grant NCC5-209,
+by the Air Force Office of Scientific Research grant F49620-00-1-0365, by
+NSF grants EAR-0112968, EAR-0225670, and EIA-0321328, and by the Army
+Research Laboratories grant DATM-05-02-C-0046. The authors are thankful
+to Hung T. Nguyen and to the anonymous referees for valuable suggestions.
+
+References
+
+1. Ferson S, Ginzburg L, Kreinovich V, Longpre´ L, Aviles M (2002) Computing
+Variance for Interval Data is NP-Hard, ACM SIGACT News 33(2):108–118.
+
+2. Goutsias J, Mahler RPS, Nguyen HT, eds. (1997) Random Sets: Theory and
+Applications. Springer-Verlag, N.Y.
+
+3. Heitjan DF, Rubin DB (1991) Ignorability and coarse data, Ann. Stat.
+19(4):2244–2253
+
+4. Jaulin L, Kieffer M, Didrit O, and Walter E (2001) Applied Interval Analysis.
+Springer-Verlag, Berlin
+
+5. Kreinovich V, Lakeyev A, Rohn J, Kahl P (1997) Computational Complexity
+and Feasibility of Data Processing and Interval Computations. Kluwer, Dor-
+drecht
+
+6. Li S, Ogura Y, Kreinovich V (2002) Limit Theorems and Applications of Set
+Valued and Fuzzy Valued Random Variables. Kluwer, Dordrecht
+
+7. Nguyen HT, Kreinovich V (1996) Nested Intervals and Sets: Concepts, Relations
+to Fuzzy Sets, and Applications, In: Kearfott RB et al., Applications of Interval
+Computations, Kluwer, Dordrecht, 245–290
+
+8. Nguyen HT, Walker EA (1999) First Course in Fuzzy Logic, CRC Press, Boca
+Raton, Florida
+
+9. Nivlet P, Fournier F, and Royer J. (2001) A new methodology to account for
+uncertainties in 4-D seismic interpretation, Proc. 71st Annual Int’l Meeting of
+Soc. of Exploratory Geophysics SEG’2001, San Antonio, TX, September 9–14,
+1644–1647.
+
+10. Nivlet P, Fournier F, Royer J (2001) Propagating interval uncertainties in su-
+pervised pattern recognition for reservoir characterization, Proc. 2001 Society
+of Petroleum Engineers Annual Conf. SPE’2001, New Orleans, LA, September
+30–October 3, paper SPE-71327.
+
+11. Osegueda R, Kreinovich V, Potluri L, Alo´ R (2002) Non-Destructive Testing of
+Aerospace Structures: Granularity and Data Mining Approach. In: Proc. FUZZ-
+IEEE’2002, Honolulu, HI, May 12–17, 2002, Vol. 1, 685–689
+
+12. Rabinovich S (1993) Measurement Errors: Theory and Practice. American In-
+stitute of Physics, New York
+
+
