@@ -16,6 +16,9 @@ services:
     image: dafg/elasticsearch:latest
     ports:
       - 8080:8080
+    environment:
+      - ELASTIC_SERVER=${ELASTIC_SERVER}
+      - ELASTIC_SERVER_PORT=${ELASTIC_SERVER_PORT}
     depends_on:
       - elastic-server
     networks:

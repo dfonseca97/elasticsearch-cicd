@@ -5,11 +5,6 @@ LABEL version="1.0"
 USER root
 
 #Elastic server connection variables.
-ARG ELASTIC_SERVER
-ARG ELASTIC_SERVER_PORT
-
-ENV ELASTIC_SERVER $ELASTIC_SERVER
-ENV ELASTIC_SERVER_PORT $ELASTIC_SERVER_PORT
 
 #Install Java.
 RUN apk update &&\

@@ -1,2 +1,2 @@
-export SONAR_SERVER=$(cut -d " " -f1 <<<  $(hostname -I))
-export SONAR_SERVER_PORT=9200
+export ELASTIC_SERVER=$(cut -d " " -f1 <<<  $(hostname -I))
+export ELASTIC_SERVER_PORT=9200
