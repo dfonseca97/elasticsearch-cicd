@@ -8,12 +8,15 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
-    volumes:
-      - .:/elasticsearch
+    networks:
+      - elastic
   spring-app:
     image: dafg/elasticsearch:latest
     ports:
       - 8080:8080
     depends_on:
       - elastic-server
-    
+    networks:
+      - elastic
+networks:
+  elastic:
