@@ -32,3 +32,9 @@ dependencies {
     compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.3.1'
     testCompile 'junit:junit'
 }
+
+//Add an integration test task.
+task integrationTest(type: Exec){
+    //Runs the integration test script.
+    commandLine 'test/integrationTest.sh'
+}
