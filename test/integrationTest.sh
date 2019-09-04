@@ -21,10 +21,10 @@ RESULT=$(curl -d "query=academic" http://${SPRING_SERVER}:${SPRING_SERVER_PORT}/
 #Check the obtained result is equal to the expected and drop the environment.
 if [ "$RESULT" -eq "$EXPECTED" ]; then
     echo true
-    #docker-compose -f test/docker-compose.yml down
+    docker-compose -f test/docker-compose.yml down
     exit 0
 else
     echo false
-    #docker-compose -f test/docker-compose.yml down
+    docker-compose -f test/docker-compose.yml down
     exit 1
 fi
