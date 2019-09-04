@@ -34,7 +34,11 @@ services:
         - "8787:8080"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
+      networks:
+        - elastic
+        - test_elastic
 volumes:
   elastic_data:
 networks:
   elastic:
+  test_elastic:
