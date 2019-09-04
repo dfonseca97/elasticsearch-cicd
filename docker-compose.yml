@@ -14,11 +14,14 @@ services:
       - elastic
   spring-app:
     image: dafg/elasticsearch:latest
+    container_name: spring-app
     ports:
       - 8080:8080
     environment:
       - ELASTIC_SERVER=${ELASTIC_SERVER}
       - ELASTIC_SERVER_PORT=${ELASTIC_SERVER_PORT}
+      - SPRING_SERVER=${SPRING_SERVER}
+      - SPRING_SERVER_PORT=${SPRING_SERVER_PORT}
     depends_on:
       - elastic-server
     networks:
@@ -40,5 +43,5 @@ services:
 volumes:
   elastic_data:
 networks:
-  elastic:
-  test_elastic:
+    elastic:
+    test_elastic:

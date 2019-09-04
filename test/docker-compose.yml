@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  elastic-server:
+  elastic-server-test:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.3.1
     container_name: elastic-server-test
     environment:
@@ -10,7 +10,7 @@ services:
       - 9301:9300
     networks:
       - elastic
-  spring-app:
+  spring-app-test:
     image: dafg/elasticsearch:latest
     container_name: spring-app-test
     ports:
@@ -18,8 +18,10 @@ services:
     environment:
       - ELASTIC_SERVER=${ELASTIC_SERVER}
       - ELASTIC_SERVER_PORT=${ELASTIC_SERVER_PORT}
+      - SPRING_SERVER=${SPRING_SERVER}
+      - SPRING_SERVER_PORT=${SPRING_SERVER_PORT}
     depends_on:
-      - elastic-server
+      - elastic-server-test
     networks:
       - elastic
 networks:
