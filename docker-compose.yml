@@ -23,6 +23,17 @@ services:
       - elastic-server
     networks:
       - elastic
+  jenkins:  
+      container_name: jenkinscustom  
+      image: dafg/jenkins
+      environment:  
+        JAVA_OPTS: "-Djava.awt.headless=true"  
+        JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"  
+      ports:  
+        - "50000:50000"  
+        - "8787:8080"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
 volumes:
   elastic_data:
 networks:
