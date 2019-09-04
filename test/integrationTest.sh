@@ -2,7 +2,7 @@
 EXPECTED=1
 
 export ELASTIC_SERVER=172.19.167.158
-export ELASTIC_SERVER_PORT=9200
+export ELASTIC_SERVER_PORT=9201
 
 docker-compose -f test/docker-compose.yml up -d
 
