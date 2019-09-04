@@ -8,7 +8,7 @@ export ELASTIC_SERVER_PORT=9200
 docker-compose -f test/docker-compose.yml up -d
 
 #Wait for the Elastic Search server to start.
-sleep 20
+sleep 30
 
 #Insert the test documents into the database.
 curl -s -d "docsPath=TestSample" http://${ELASTIC_SERVER}:8080/index 1>/dev/null
