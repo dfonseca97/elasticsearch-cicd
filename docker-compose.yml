@@ -44,4 +44,6 @@ volumes:
   elastic_data:
 networks:
     elastic:
+      name: elastic
     test_elastic:
+      name: test_elastic
