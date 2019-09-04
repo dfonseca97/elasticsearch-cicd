@@ -21,6 +21,9 @@ import java.util.Map;
 
 public class Searcher {
 
+    private final String ELASTIC_SERVER = System.getenv("ELASTIC_SERVER");
+    private final String ELASTIC_SERVER_PORT = System.getenv("ELASTIC_SERVER_PORT");
+
     public List<Search> search(String query)
     {
         String documentUser = "NO_USER";
@@ -30,7 +33,7 @@ public class Searcher {
 
         RestHighLevelClient client = new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost("localhost", 9200, "http")));
+                    new HttpHost(ELASTIC_SERVER, Integer.parseInt(ELASTIC_SERVER_PORT), "http")));
         try{
             MatchQueryBuilder matchQueryBuilder = new MatchQueryBuilder("content", query);
 

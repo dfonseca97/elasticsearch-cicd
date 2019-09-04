@@ -16,11 +16,13 @@ import java.util.Date;
 
 public class Indexer {
 
+    private final String ELASTIC_SERVER = System.getenv("ELASTIC_SERVER");
+    private final String ELASTIC_SERVER_PORT = System.getenv("ELASTIC_SERVER_PORT");
     public void index(String docsPath) {
 
         RestHighLevelClient client = new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost("localhost", 9200, "http")));
+                    new HttpHost(ELASTIC_SERVER, Integer.parseInt(ELASTIC_SERVER_PORT), "http")));
         try{
             File docDir = new File(docsPath);
 
