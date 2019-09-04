@@ -2,6 +2,8 @@
 #Expected test result.
 EXPECTED=1
 
+export ELASTIC_SERVER=$(ip route get 8.8.8.8 | sed -n '/src/{s/.*src *\([^ ]*\).*/\1/p;q}')
+export ELASTIC_SERVER_PORT=9200
 docker-compose -f test/docker-compose.yml up -d
 
 #Wait for the Elastic Search server to start.

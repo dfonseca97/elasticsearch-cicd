@@ -16,8 +16,8 @@ services:
     ports:
       - 8080:8080
     environment:
-      - ELASTIC_SERVER=localhost
-      - ELASTIC_SERVER_PORT=9200
+      - ELASTIC_SERVER=${ELASTIC_SERVER}
+      - ELASTIC_SERVER_PORT=${ELASTIC_SERVER_PORT}
     depends_on:
       - elastic-server
     networks:
