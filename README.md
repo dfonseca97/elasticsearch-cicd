@@ -9,18 +9,6 @@ that allows me to store text files contents along with the date they are added a
 we would like to be able to search through keywords the contents of the documents then get the 
 title of the text file, date it was added and highlight content where the keyword was found.
 
-## Project REST endpoints
-
-Elasticsearch works as a search engine, where you can store (index) any content you desire to then
-search.The REST endpoints to do so are found below:
-
-```bash
-# Index REST endpoint
-http://localhost:8080/index?docsPath=TestSample
-
-# Search REST endpoint
-http://localhost:8080/search?query=computer
-```
 ## Running the project
 
 To run the project Docker and docker-compose must be installed beforehand:
