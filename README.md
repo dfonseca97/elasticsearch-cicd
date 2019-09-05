@@ -57,4 +57,4 @@ query=Text to search for inside the indexed documents.
 
 ## Further insights on the project
 
-More documentation about how the automatization was made possible on this repository's wiki.
+More documentation about how the automatization was made possible on this repository's wiki https://github.com/dfonseca97/elasticsearch-cicd/wiki
