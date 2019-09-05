@@ -22,9 +22,9 @@ services:
       - ELASTIC_SERVER_PORT=${ELASTIC_SERVER_PORT}
       - SPRING_SERVER=${SPRING_SERVER}
       - SPRING_SERVER_PORT=${SPRING_SERVER_PORT}
-      - JENKINS_USER=$JENKINS_USER
-      -  JENKINS_PASSWORD=$JENKINS_PASSWORD
-      -  JOB_NAME_1=elastic_search
+      - JENKINS_USER=${JENKINS_USER}
+      - JENKINS_PASSWORD=${JENKINS_PASSWORD}
+      - JOB_NAME_1=elastic_search
     depends_on:
       - elastic-server
     networks:
