@@ -11,7 +11,7 @@ services:
     networks:
       - elastic
   spring-app-test:
-    image: dafg/elasticsearch:latest
+    image: dafg/elasticsearch:test
     container_name: spring-app-test
     ports:
       - 8989:8080
@@ -24,6 +24,7 @@ services:
       - elastic-server-test
     networks:
       - elastic
+    command: java -jar /elasticsearch/build/libs/*.jar
 networks:
   elastic:
     name: test_elastic
