@@ -2,40 +2,6 @@
 This is a simple elasticsearch application to be run with Docker and accessed through Java to be set up using a cicd 
 environment.
 
-## Starting simple elasticsearch server
-
-The elasticsearch server is created through Docker Compose. To start up the server simply run:
-
-```bash
-docker-compose up -d
-``` 
-
-You can find the docker-compose file at the root of this project.
-
-You can find out that the elasticsearch server is running by accessing through any browser:
-
-```bash
-http://localhost:9200
-``` 
-
-## Springboot application startup
-
-This application is a rest service created with springboot. Through gradle you can start up the rest service by running:
-
-```bash
-gradlew bootRun
-or
-gradlew build && java -jar elastic-cicd-0.1.0.jar
-``` 
-
-You can check that the service is running by hitting the root or health resource:
-
-```bash
-http://localhost:8080
-or
-http://localhost:8080/health
-```
-
 ## Project
 
 We want an application to store and search for document titles, date and contents. Ideally it should be rest application 
@@ -55,3 +21,52 @@ http://localhost:8080/index?docsPath=TestSample
 # Search REST endpoint
 http://localhost:8080/search?query=computer
 ```
+## Running the project
+
+To run the project Docker and docker-compose must be installed beforehand:
+
+https://docs.docker.com/install/
+https://docs.docker.com/compose/install/
+
+Before running the project, the environment variables must be set:
+
+```bash
+export ELASTIC_SERVER=<IP address of the Elastic Search server>
+export ELASTIC_SERVER_PORT=<Port where the Elastic Server is listening>
+export JENKINS_USER=<user for jenkins login>
+export JENKINS_PASSWORD=<password for jenkins login>
+```
+
+The ELASTIC_SERVER variable must be an IP address or the name of the Elastic Search service in Docker, elastic-server, in this case. Localhost **does not** work in this case since the Spring application resides in a different container. The port should be 9200 in this case since that is where the server is running. Another external server could be used as well.
+
+The jenkins user and password for the initial run are **both** admin. All jenkins users were configured to have no privileges at all since this instance is only configured to run this project.
+
+To start the Elastic Search, Spring Application and Jenkins servers run:
+
+> $docker-compose up 
+
+This will start the Elastic Server container and the Jenkins container first. After these are both up and running the Spring Application will start.
+
+* The Jenkins UI can be accessed on *http://localhost:8787*
+* The Spring app's health check can be accessed on *http://localhost:8080* or *http://localhost:8080/health* and the available endpoints are
+
+```bash
+[GET]
+http://localhost:8080/index
+
+parameters: 
+docsPath=Absolute address to the documents to be indexed.
+
+[GET]
+http://localhost:8080/search
+
+parameters: 
+query=Text to search for inside the indexed documents.
+
+```
+
+* The elastic server is located on *http://localhost:9200*
+
+## Further insights on the project
+
+More documentation about how the automatization was made possible on this repository's wiki.
