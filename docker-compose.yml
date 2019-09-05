@@ -22,6 +22,9 @@ services:
       - ELASTIC_SERVER_PORT=${ELASTIC_SERVER_PORT}
       - SPRING_SERVER=${SPRING_SERVER}
       - SPRING_SERVER_PORT=${SPRING_SERVER_PORT}
+      - JENKINS_USER=$JENKINS_USER
+      -  JENKINS_PASSWORD=$JENKINS_PASSWORD
+      -  JOB_NAME_1=elastic_search
     depends_on:
       - elastic-server
     networks:
@@ -31,15 +34,16 @@ services:
       image: dafg/jenkins
       environment:  
         JAVA_OPTS: "-Djava.awt.headless=true"  
-        JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"  
+        JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
       ports:  
         - "50000:50000"  
         - "8787:8080"
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
+        - $PWD/jenkins/data:/var/jenkins_home
       networks:
         - elastic
-        - test_elastic
+        - test_elastic 
 volumes:
   elastic_data:
 networks:

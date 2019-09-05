@@ -25,11 +25,7 @@ COPY . /elasticsearch
 RUN ./gradlew clean
 RUN ./gradlew build
 
-RUN mkdir /startup
-COPY jenkins/run_job.sh /startup/run_job.sh
-RUN chmod -u+x /startup/run_job.sh
-
 #Executes the application.
-ENTRYPOINT /startup/run_job.sh
+ENTRYPOINT java -jar build/libs/*.jar
 
 EXPOSE 8080
