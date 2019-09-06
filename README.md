@@ -36,6 +36,11 @@ To start the Elastic Search, Spring Application and Jenkins servers run:
 This will start the Elastic Server container and the Jenkins container first. After these are both up and running the Spring Application will start.
 
 * The Jenkins UI can be accessed on *http://localhost:8787*
+
+The Jenkins job is automatically loaded on jenkins. The elastic-search-DSL job pulls the code from repository, builds it, and runs the test script. The trigger is configured to poll the SCM every 15 minutes. The job can also be run manually by selecting the job and clicking on the build button.
+
+The elastic-search job is the seed job used for creating the elastic-search-DSL job.
+
 * The Spring app's health check can be accessed on *http://localhost:8080* or *http://localhost:8080/health* and the available endpoints are
 
 ```bash
@@ -57,4 +62,4 @@ query=Text to search for inside the indexed documents.
 
 ## Further insights on the project
 
-More documentation about how the automatization was made possible on this repository's wiki https://github.com/dfonseca97/elasticsearch-cicd/wiki
+More documentation about how the automation was made possible on this repository's wiki https://github.com/dfonseca97/elasticsearch-cicd/wiki
