@@ -22,7 +22,7 @@ public class ElasticResource {
         return "<h1>Elasticsearch CICD is running!</h1>";
     }
 
-    @RequestMapping("/index")
+    @RequestMapping("/indexerror")
     public String index(@RequestParam(value="docsPath") String docsPath) {
         getIndexer().index(docsPath);
         return "Documents have been successfully Indexed!";
