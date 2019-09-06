@@ -31,7 +31,7 @@ The jenkins user and password for the initial run are **both** admin. All jenkin
 
 To start the Elastic Search, Spring Application and Jenkins servers run:
 
-> $docker-compose up 
+> $docker-compose up -d
 
 This will start the Elastic Server container and the Jenkins container first. After these are both up and running the Spring Application will start.
 
